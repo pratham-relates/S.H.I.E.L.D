@@ -1,30 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <title>AR Mining safty</title>
   <link rel="stylesheet" href="https://public.codepenassets.com/css/normalize-5.0.0.min.css">
   <link rel="stylesheet" href="./style.css">
+  <style>
+    /* Styling for the app view container */
+    .app-screen {
+      width: 100%;
+      height: 60vh; /* Adjust height as needed */
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      background: rgba(0, 0, 0, 0.2);
+    }
+  </style>
 </head>
-
 <body>
   <main>
     <header>
       <h2>S.H.I.E.L.D</h2>
     </header>
 
+    <!-- The App Screen: Content loads here without reloading the page -->
+    <iframe name="app-screen" src="iner/Home.html" class="app-screen"></iframe>
+
     <nav class="nav">
       <ul>
-        <li><a href="iner/Home.html" id="home">Home</a></li>
-        <li><a href="iner/Ar.html" id="project">AR</a></li>
-        <li><a href="#Traning" id="about">Traning</a></li>
-        <li><a href="#Safety Status" id="how">Safety Dril</a></li>
-        <li><a href="#3D Render" id="how">3D Render</a></li>
+        <!-- Using target="app-screen" tells the link to open in the iframe above -->
+        <li><a href="iner/Home.html" target="app-screen" id="home">Home</a></li>
+        <li><a href="iner/Ar.html" target="app-screen" id="project">AR</a></li>
+        <li><a href="iner/Traning.html" target="app-screen" id="about">Traning</a></li>
+        <li><a href="iner/Safty Dril.html" target="app-screen" id="how">Safety Dril</a></li>
+        <li><a href="iner/3D Render.html" target="app-screen" id="how">3D Render</a></li>
       </ul>
     </nav>
   </main>
+  
   <script src="./script.js"></script>
-
 </body>
 </html>
