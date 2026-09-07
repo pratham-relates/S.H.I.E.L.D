@@ -20,10 +20,22 @@ const links = nav.querySelectorAll('li a');
 const mainUI = document.getElementById('main-ui');
 const appScreen = document.getElementById('app-screen');
 
+// Background map with AR ('project') and 3D Render ('how') swapped
+const backgroundMap = {
+  'home': 'Images/home.jpeg',
+  'project': 'Images/3d.jpg',     // Swapped: AR now uses 3D Render's image
+  'about': 'Images/training.png',
+  'how': 'Images/ar.jpeg'         // Swapped: 3D Render now uses AR's image
+};
+
 function closePreview() {
   mainUI.classList.remove('slide-down');
   appScreen.classList.remove('visible');
   nav.classList.remove('has-selection');
+  
+  // Reset background back to main menu
+  document.body.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('Images/main_menu.jpeg')";
+
   [...nav.querySelectorAll('li')].map(link => link.classList.remove('active'));
   setTimeout(() => {
     appScreen.src = "";
@@ -33,7 +45,8 @@ function closePreview() {
 for (let i = 0; i < links.length; i++) {
   links[i].addEventListener('click', (event) => {
     const targetLi = event.target.parentNode;
-    
+    const linkId = event.target.id;
+          
     // If the clicked tab is already active, toggle it closed
     if (targetLi.classList.contains('active') && mainUI.classList.contains('slide-down')) {
       event.preventDefault();
@@ -41,14 +54,18 @@ for (let i = 0; i < links.length; i++) {
       return;
     }
 
-    // Otherwise, open/switch to this tab
+    // Otherwise, open/switch to this tab and update background image
+    if (backgroundMap[linkId]) {
+      document.body.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('${backgroundMap[linkId]}')`;
+    }
+
     const width = targetLi.offsetWidth;
     const { left } = targetLi.getBoundingClientRect();
     const offsetLeft = left - nav.getBoundingClientRect().left;
-    
+          
     [...nav.querySelectorAll('li')].map(link => link.classList.remove('active'));
     targetLi.classList.add('active');
-    
+          
     nav.classList.add('has-selection'); 
     nav.style.setProperty('--after-bg-position', offsetLeft);
     nav.style.setProperty('--after-radial-bg-position', (left + width / 2) - nav.getBoundingClientRect().left);
