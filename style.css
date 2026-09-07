@@ -90,8 +90,8 @@ main header h2 {
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.1); 
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(15%);
+  -webkit-backdrop-filter: blur(15px);
   opacity: 0;
   visibility: hidden;
   transform: translateY(40px) scale(0.95);
