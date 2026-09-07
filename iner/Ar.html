@@ -1,15 +1,45 @@
-<!Document html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta character="UTF-8">
-        <tittle>Home -S.H.I.E.L.D</tittle>
-        <link rel="stylesheet"herf="style.css">
-        </head>
-        <body>
-            <h1><S class="S H I E L D"></h1>
-<h2>Welcome to the home page</h2>
-<p>This is the main home page of he AR mining safty system.</p>
-<a herf="index.html"class="nav-button">
-    Back to the main page</a>
-        </body>
+<head>
+    <meta charset="UTF-8">
+    <title>S.H.I.E.L.D - AR</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 2rem;
+            color: white;
+            font-family: "Mona Sans", sans-serif;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 4rem);
+            text-align: center;
+        }
+        h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+        p { font-size: 1.2rem; margin-bottom: 2rem; color: #ccc; }
+        .nav-button {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.3s;
+            font-weight: bold;
+        }
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>AR Module</h2>
+    <p>Initialize augmented reality overlay for mining environment.</p>
+    <a href="#" onclick="window.parent.closePreview(); return false;" class="nav-button">
+        Back to the main menu
+    </a>
+</body>
 </html>

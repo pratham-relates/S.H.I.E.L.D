@@ -5,30 +5,19 @@
   <title>AR Mining safty</title>
   <link rel="stylesheet" href="https://public.codepenassets.com/css/normalize-5.0.0.min.css">
   <link rel="stylesheet" href="./style.css">
-  <style>
-    /* Styling for the app view container */
-    .app-screen {
-      width: 100%;
-      height: 60vh; /* Adjust height as needed */
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      margin-bottom: 2rem;
-      background: rgba(0, 0, 0, 0.2);
-    }
-  </style>
 </head>
 <body>
-  <main>
+
+  <!-- The Preview Screen (Hidden by default) -->
+  <iframe name="app-screen" id="app-screen" class="app-screen"></iframe>
+
+  <!-- The Main Navigation UI -->
+  <main id="main-ui">
     <header>
       <h2>S.H.I.E.L.D</h2>
     </header>
-
-    <!-- The App Screen: Content loads here without reloading the page -->
-    <iframe name="app-screen" src="iner/Home.html" class="app-screen"></iframe>
-
     <nav class="nav">
       <ul>
-        <!-- Using target="app-screen" tells the link to open in the iframe above -->
         <li><a href="iner/Home.html" target="app-screen" id="home">Home</a></li>
         <li><a href="iner/Ar.html" target="app-screen" id="project">AR</a></li>
         <li><a href="iner/Traning.html" target="app-screen" id="about">Traning</a></li>
@@ -37,7 +26,7 @@
       </ul>
     </nav>
   </main>
-  
+
   <script src="./script.js"></script>
 </body>
 </html>
