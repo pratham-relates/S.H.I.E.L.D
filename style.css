@@ -32,18 +32,19 @@ html, body {
   margin: 0;
 }
 
-/* Updated Body Layout for Animations */
 body {
-  background: var(--body-bg-color);
+  /* Background image outside the bar */
+  background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('Images/main_menu.jpeg');
+  background-size: cover;
+  background-position: center;
   font-family: "Mona Sans", sans-serif;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden; /* Prevents scrollbars during animation */
+  overflow: hidden;
 }
 
-/* Default Centered State */
 main {
   position: absolute;
   top: 50%;
@@ -55,7 +56,6 @@ main {
   z-index: 10;
 }
 
-/* Triggered State: Slides to the bottom */
 main.slide-down {
   top: 100%;
   transform: translateY(calc(-100% - 2rem));
@@ -67,7 +67,6 @@ main header {
   transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Fades the logo out as it slides down to make room for preview */
 main.slide-down header {
   opacity: 0;
   margin-bottom: 0;
@@ -79,18 +78,20 @@ main.slide-down header {
 main header h2 {
   font-size: 2em;
   font-weight: 500;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-/* Iframe / Preview Screen Styles */
 .app-screen {
   position: absolute;
   top: 2rem;
   width: 95%;
   max-width: 1100px;
-  height: calc(100vh - 180px); /* Adjusts dynamically to leave space for the nav at the bottom */
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  height: calc(100vh - 180px); 
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 20px;
-  background: rgba(0, 0, 0, 0.5); 
+  background: rgba(255, 255, 255, 0.1); 
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   opacity: 0;
   visibility: hidden;
   transform: translateY(40px) scale(0.95);
@@ -98,86 +99,115 @@ main header h2 {
   z-index: 5;
 }
 
-/* Shows the preview screen */
 .app-screen.visible {
   opacity: 1;
   visibility: visible;
   transform: translateY(0) scale(1);
 }
 
-/* ---- ORIGINAL NAVIGATION CSS (Unchanged) ---- */
+/* --- TRUE LIQUID GLASS NAVIGATION BAR --- */
 .nav {
   transition: --after-bg-position var(--trs-timing) var(--trs-easing) 0s, --after-radial-bg-position var(--trs-timing) var(--trs-easing) 0s, --after-bg-width var(--trs-timing) var(--trs-easing) 0s, --after-bg-opacity var(--trs-timing) var(--trs-easing) 0s, --li-before-opacity var(--trs-timing) var(--trs-easing) 0s;
-  background: var(--body-bg-color);
+  
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px) saturate(200%);
+  -webkit-backdrop-filter: blur(16px) saturate(200%);
+  
   border-radius: 100px;
   position: relative;
+  
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.15);
 }
+
 .nav:before {
-  content: "";
-  display: block;
-  position: absolute;
+  content: ""; display: block; position: absolute;
   width: calc(calc(var(--after-bg-width) * 1px) - 8px);
   height: 100%;
   background: rgb(255 255 255/calc(var(--after-shadow-offset)*1%));
   border-radius: 100px;
   filter: blur(20px);
-  left: 0;
-  top: 0;
+  left: 0; top: 0;
   transform: translateX(calc(var(--after-bg-position) * 1px)) scale(1.1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
+
 .nav ul {
-  position: relative;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  display: flex;
-  justify-content: space-between;
-  height: 80px;
-  border-radius: 100px;
+  position: relative; padding: 0; margin: 0;
+  list-style: none; display: flex; justify-content: space-between;
+  height: 80px; border-radius: 100px;
   background-position: center center;
-  background-image: radial-gradient(ellipse 150px 100px at calc(var(--after-radial-bg-position)*1px) bottom, white 0%, rgba(255, 255, 255, 0.2) 100%);
 }
+
 .nav ul:active { --after-scale: 0.75; }
+
 .nav ul:before {
   content: ""; display: block; position: absolute;
   width: calc(100% - 2px); height: calc(100% - 2px);
-  background: var(--body-bg-color);
+  background: rgba(255, 255, 255, 0.05);
   top: 1px; left: 1px; border-radius: 100px;
 }
+
+/* The Active Sliding Glass Bubble (Toned down whiteness) */
 .nav ul:after {
   content: ""; display: block; position: absolute; z-index: 1;
   width: calc(calc(var(--after-bg-width) * 1px) - 12px);
   height: calc(100% - 12px);
-  background: linear-gradient(to bottom, rgb(255 255 255/calc(calc(var(--after-bg-opacity, 0)/10)*1%)), rgba(255, 255, 255, 0.1));
-  box-shadow: inset 0 -6px calc(var(--after-shadow-offset, 0)*1px) rgb(255 255 255/calc(var(--after-bg-opacity)*1%));
+  
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.03));
+  backdrop-filter: blur(12px) saturate(220%);
+  -webkit-backdrop-filter: blur(12px) saturate(220%);
+  
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.9),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1),
+    0 4px 15px rgba(0, 0, 0, 0.1);
+    
   left: 6px; top: 6px;
   transform: translate(calc(var(--after-bg-position) * 1px), 0);
-  border-radius: 100px 12px 12px 100px;
-  transition: --after-bg-opacity var(--trs-timing) var(--trs-easing) var(--trs-delay), --after-shadow-offset var(--trs-timing) var(--trs-easing) var(--trs-delay), border-radius var(--trs-timing) var(--trs-easing) var(--trs-delay);
+  border-radius: 100px; 
   pointer-events: none;
+  opacity: 0; 
+  transition: opacity 0.3s ease, --after-bg-opacity var(--trs-timing) var(--trs-easing) var(--trs-delay), --after-shadow-offset var(--trs-timing) var(--trs-easing) var(--trs-delay);
 }
+
 .nav ul li {
   padding: 1em; height: 100%; width: 100%; position: relative;
   transform-style: preserve-3d; perspective: 800px;
 }
+
 .nav ul li:not(.active):hover { --li-before-opacity: 0.3; }
+
 .nav ul li:before {
   content: ""; display: block; position: absolute; z-index: 1;
-  background: rgba(255, 0, 0, 0.1);
   width: 100%; height: 100%; top: 0; left: 0; border-radius: 8px;
   pointer-events: none; user-select: none;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.35));
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
   opacity: var(--li-before-opacity);
   transform: scale(var(--after-scale)) rotateY(calc(var(--tilt-bg-y) * 3 * -1deg)) rotateX(calc(var(--tilt-bg-x) * 3 * 1deg)) translateZ(15px);
   transition: --li-before-opacity var(--trs-timing) var(--trs-easing), --after-scale calc(var(--trs-timing)/2) var(--trs-easing) calc(var(--trs-delay)/2);
 }
+
 .nav ul li:first-of-type:before { border-radius: 100px 12px 12px 100px; }
 .nav ul li:last-of-type:before { border-radius: 12px 100px 100px 12px; }
+
 .nav ul li a {
   display: block; color: inherit; width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
   text-decoration: none; position: relative; z-index: 10;
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
-.nav ul:has(li.active:first-of-type a):after { border-radius: 100px 12px 12px 100px; }
-.nav ul:has(li.active:last-of-type a):after { border-radius: 12px 100px 100px 12px; }
-.nav ul:has(li.active:nth-child(n+2):nth-child(-n+4) a):after { border-radius: 100px; }
+
+.nav.has-selection:before,
+.nav.has-selection ul:after {
+  opacity: 1;
+}
+
+.nav.has-selection ul {
+  background-image: radial-gradient(ellipse 150px 100px at calc(var(--after-radial-bg-position)*1px) bottom, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 100%);
+}

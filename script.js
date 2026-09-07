@@ -3,31 +3,16 @@ function inverseMousePosition(element, event) {
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
   const res = {
-    x1: -(x - rect.width / 2) / 20, // top left
+    x1: -(x - rect.width / 2) / 20, 
     y1: -(y - rect.height / 2) / 20,
-    x2: -(x - rect.width / 2) / 20, // top right
+    x2: -(x - rect.width / 2) / 20, 
     y2: (y - rect.height / 2) / 20,
-    x3: (x - rect.width / 2) / 20, // bottom left
+    x3: (x - rect.width / 2) / 20, 
     y3: -(y - rect.height / 2) / 20,
-    x4: (x - rect.width / 2) / 20, // bottom right
+    x4: (x - rect.width / 2) / 20, 
     y4: (y - rect.height / 2) / 20
   };
-  const resKey = "x" + (x < rect.width / 2 ? 1 : 2) + (y < rect.height / 2 ? 1 : 3);
-  const tilt = res;
-  return tilt !== undefined ? tilt : 0; // default to 0 if undefined
-}
-
-function handleClick(event) {
-  const nav = document.querySelector('.nav');
-  const target = event.target.parentNode;
-  const width = target.offsetWidth;
-  const { left } = target.getBoundingClientRect();
-  const offsetLeft = left - nav.getBoundingClientRect().left;
-  [...nav.querySelectorAll('li')].map(link => link.classList.remove('active'));
-  event.target.parentNode.classList.add('active');
-  nav.style.setProperty('--after-bg-position', offsetLeft);
-  nav.style.setProperty('--after-radial-bg-position', (left + width / 2) - nav.getBoundingClientRect().left);
-  nav.style.setProperty('--after-bg-width', width);
+  return res !== undefined ? res : 0; 
 }
 
 const nav = document.querySelector('.nav');
@@ -35,11 +20,40 @@ const links = nav.querySelectorAll('li a');
 const mainUI = document.getElementById('main-ui');
 const appScreen = document.getElementById('app-screen');
 
+function closePreview() {
+  mainUI.classList.remove('slide-down');
+  appScreen.classList.remove('visible');
+  nav.classList.remove('has-selection');
+  [...nav.querySelectorAll('li')].map(link => link.classList.remove('active'));
+  setTimeout(() => {
+    appScreen.src = "";
+  }, 800);
+}
+
 for (let i = 0; i < links.length; i++) {
-  links[i].addEventListener('click', handleClick);
-  
-  // NEW: Trigger the sliding animation and reveal preview
-  links[i].addEventListener('click', () => {
+  links[i].addEventListener('click', (event) => {
+    const targetLi = event.target.parentNode;
+    
+    // If the clicked tab is already active, toggle it closed
+    if (targetLi.classList.contains('active') && mainUI.classList.contains('slide-down')) {
+      event.preventDefault();
+      closePreview();
+      return;
+    }
+
+    // Otherwise, open/switch to this tab
+    const width = targetLi.offsetWidth;
+    const { left } = targetLi.getBoundingClientRect();
+    const offsetLeft = left - nav.getBoundingClientRect().left;
+    
+    [...nav.querySelectorAll('li')].map(link => link.classList.remove('active'));
+    targetLi.classList.add('active');
+    
+    nav.classList.add('has-selection'); 
+    nav.style.setProperty('--after-bg-position', offsetLeft);
+    nav.style.setProperty('--after-radial-bg-position', (left + width / 2) - nav.getBoundingClientRect().left);
+    nav.style.setProperty('--after-bg-width', width);
+
     mainUI.classList.add('slide-down');
     appScreen.classList.add('visible');
   });
@@ -51,25 +65,16 @@ for (let i = 0; i < links.length; i++) {
   });
 }
 
-// NEW: Function to close the preview (called by the Back button in the inner files)
-window.closePreview = function() {
-  mainUI.classList.remove('slide-down');
-  appScreen.classList.remove('visible');
-  
-  // Clear the iframe after the animation finishes so it resets
-  setTimeout(() => {
-    appScreen.src = "";
-  }, 800); 
-};
+window.closePreview = closePreview;
 
-['DOMContentLoaded', 'resize'].map(event => window.addEventListener(event, () => {
-  const { width, left } = links[0].parentNode.getBoundingClientRect();
-  for (let i = 0; i < links.length; i++) {
-    links[i].parentNode.classList.remove('active');
+window.addEventListener('resize', () => {
+  const activeLi = document.querySelector('.nav li.active');
+  if (activeLi) {
+    const width = activeLi.offsetWidth;
+    const { left } = activeLi.getBoundingClientRect();
+    const offsetLeft = left - nav.getBoundingClientRect().left;
+    nav.style.setProperty('--after-bg-position', offsetLeft);
+    nav.style.setProperty('--after-radial-bg-position', (left + width / 2) - nav.getBoundingClientRect().left);
+    nav.style.setProperty('--after-bg-width', width);
   }
-  links[0].parentNode.classList.add('active');
-  const offsetLeft = left - nav.getBoundingClientRect().left;
-  nav.style.setProperty('--after-bg-position', offsetLeft);
-  nav.style.setProperty('--after-radial-bg-position', 0);
-  nav.style.setProperty('--after-bg-width', width);
-}));
+});
