@@ -1,268 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AR Machine Preview - Surface Placement</title>
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-      background: #000;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.H.I.E.L.D. - AR Section</title>
+    
+    <!-- 1. Include the Model Viewer script (Required) -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
-    .ar-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0b0f19;
+            font-family: Arial, sans-serif;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
 
-    /* Camera Feed Layer with initial blur */
-    #camera-feed {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: blur(8px);
-      transition: filter 0.5s ease-in-out;
-      z-index: 1;
-    }
+        h1 {
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            color: #00ffff;
+        }
 
-    .ar-container.active #camera-feed {
-      filter: blur(0px);
-    }
+        p {
+            color: #8b9bb4;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
 
-    /* 3D Model Container (Hidden until surface is selected/placed) */
-    #model-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 2;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
-    }
+        /* Style the 3D viewing box on the screen */
+        model-viewer {
+            width: 90%;
+            max-width: 500px;
+            height: 400px;
+            background-color: #111827;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 255, 255, 0.15);
+        }
 
-    #model-overlay.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
+        /* Style the Pokémon GO-style AR launch button */
+        #ar-button {
+            background-color: #00ffff;
+            color: #0b0f19;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
+            position: absolute;
+            bottom: 30px;
+        }
 
-    /* UI Overlay Controls */
-    .ui-layer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 10;
-      pointer-events: none;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    .interactive {
-      pointer-events: auto;
-    }
-
-    /* Top Bar: Camera Switcher */
-    .top-bar {
-      width: 100%;
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-    }
-
-    .icon-btn {
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: #fff;
-      padding: 10px 16px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 14px;
-      backdrop-filter: blur(5px);
-      transition: background 0.3s;
-    }
-
-    .icon-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    /* Bottom Instructions & Triggers */
-    .prompt-box {
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
-      padding: 16px 24px;
-      border-radius: 16px;
-      text-align: center;
-      margin-bottom: 20px;
-      max-width: 90%;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    }
-
-    .prompt-box h3 {
-      margin: 0 0 8px 0;
-      font-size: 16px;
-    }
-
-    .prompt-box p {
-      margin: 0 0 12px 0;
-      font-size: 13px;
-      color: #ccc;
-    }
-
-    .action-btn {
-      background: #007bff;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      font-size: 14px;
-      font-weight: bold;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
-    }
-
-    .action-btn:hover {
-      background: #0056b3;
-      transform: scale(1.05);
-    }
-
-    .hidden {
-      display: none !important;
-    }
-  </style>
-  <!-- Google Model Viewer -->
-  <script type="module" src="https://unpkg.com/@model-viewer/viewer@v3.5.0/dist/model-viewer.min.js"></script>
+        #ar-button:hover {
+            background-color: #00cccc;
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
 
-  <div class="ar-container" id="arContainer">
-    <!-- Live Camera Video Stream -->
-    <video id="camera-feed" autoplay playsinline muted></video>
+    <h1>S.H.I.E.L.D. AR VIEWER</h1>
+    <p>Inspect the asset in 3D or place it in your real-world environment.</p>
 
-    <!-- 3D Machine Model -->
-    <model-viewer id="model-overlay" 
-                  src="../Images/machine.glb" 
-                  ios-src="../Images/machine.usdz"
-                  ar 
-                  ar-modes="webxr scene-viewer quick-look" 
-                  camera-controls 
-                  auto-rotate>
+    <!-- 2. The Model Viewer Element -->
+    <model-viewer 
+        src="assets/your-shield-model.glb" 
+        ar 
+        ar-modes="scene-viewer quick-look webxr" 
+        camera-controls 
+        auto-rotate
+        touch-action="pan-y"
+        alt="S.H.I.E.L.D 3D Asset">
+        
+        <!-- 3. This button triggers the AR surface scanner on mobile -->
+        <button slot="ar-button" id="ar-button">
+            🚀 Launch AR (Surface Scan)
+        </button>
+
     </model-viewer>
-
-    <!-- UI Interaction Layer -->
-    <div class="ui-layer">
-      <!-- Top bar for camera switching -->
-      <div class="top-bar">
-        <button class="icon-btn interactive hidden" id="switchCamBtn">Switch Camera 🔄</button>
-      </div>
-
-      <!-- Bottom dynamic prompt box -->
-      <div class="prompt-box interactive" id="promptBox">
-        <h3 id="promptTitle">AR Camera Ready</h3>
-        <p id="promptDesc">Tap start to engage the live camera feed.</p>
-        <button class="action-btn" id="mainActionBtn">Start AR Experience</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const container = document.getElementById('arContainer');
-    const videoElement = document.getElementById('camera-feed');
-    const modelOverlay = document.getElementById('model-overlay');
-    const promptBox = document.getElementById('promptBox');
-    const promptTitle = document.getElementById('promptTitle');
-    const promptDesc = document.getElementById('promptDesc');
-    const mainActionBtn = document.getElementById('mainActionBtn');
-    const switchCamBtn = document.getElementById('switchCamBtn');
-
-    let currentFacingMode = 'environment'; // Start with back camera for AR
-    let currentStream = null;
-    let stage = 'init'; // 'init' -> 'placement' -> 'placed'
-
-    // Initialize/Switch Camera Stream
-    async function startCamera(facingMode) {
-      if (currentStream) {
-        currentStream.getTracks().forEach(track => track.stop());
-      }
-      try {
-        const constraints = {
-          video: { facingMode: { exact: facingMode } }
-        };
-        currentStream = await navigator.mediaDevices.getUserMedia(constraints);
-        videoElement.srcObject = currentStream;
-      } catch (err) {
-        // Fallback if exact facingMode isn't supported (common on some laptops/tablets)
-        try {
-          currentStream = await navigator.mediaDevices.getUserMedia({ video: true });
-          videoElement.srcObject = currentStream;
-        } catch (e) {
-          console.error("Camera access failed:", e);
-          alert("Could not access device camera. Please verify permissions.");
-        }
-      }
-    }
-
-    // Initial load
-    startCamera(currentFacingMode);
-
-    // Handle Workflow Steps via Main Action Button
-    mainActionBtn.addEventListener('click', () => {
-      if (stage === 'init') {
-        // Step 1: Clear blur and move to Surface Selection stage
-        container.classList.add('active');
-        switchCamBtn.classList.remove('hidden');
-        
-        stage = 'placement';
-        promptTitle.innerText = "Select Placement Surface";
-        promptDesc.innerText = "Point your device at a flat surface (table or floor) and tap 'Place Model' where you want it projected.";
-        mainActionBtn.innerText = "Place 3D Model Here";
-
-      } else if (stage === 'placement') {
-        // Step 2: Project the 3D Model onto the selected surface
-        stage = 'placed';
-        modelOverlay.classList.add('visible');
-        
-        promptTitle.innerText = "Model Placed Successfully!";
-        promptDesc.innerText = "You can now rotate, inspect, or use native AR to view the machine in your space.";
-        mainActionBtn.innerText = "Reset / Change Position";
-
-      } else if (stage === 'placed') {
-        // Reset back to placement selection
-        stage = 'placement';
-        modelOverlay.classList.remove('visible');
-        
-        promptTitle.innerText = "Select Placement Surface";
-        promptDesc.innerText = "Point at a new surface and tap 'Place Model Here'.";
-        mainActionBtn.innerText = "Place 3D Model Here";
-      }
-    });
-
-    // Switch between Front and Back camera
-    switchCamBtn.addEventListener('click', () => {
-      currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
-      startCamera(currentFacingMode);
-    });
-  </script>
 
 </body>
 </html>
