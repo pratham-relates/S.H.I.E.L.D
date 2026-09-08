@@ -2,27 +2,259 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>S.H.I.E.L.D - Training</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Mining Safety - Training Preview</title>
+    
+    <!-- Inline Styles for Training Preview & Quiz -->
     <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --border-color: rgba(255, 255, 255, 0.15);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-cyan: #0ea5e9;
+            --success-green: #4ade80;
+            --error-red: #f87171;
+        }
+
         body {
             margin: 0;
-            padding: 2rem;
-            color: white;
-            font-family: "Mona Sans", sans-serif;
-            background: transparent;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            height: calc(100vh - 4rem);
-            text-align: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
-        h2 { font-size: 2.5rem; margin-bottom: 1rem; }
-        p { font-size: 1.2rem; color: #ccc; }
+
+        /* Quiz Card Styling (Glassmorphism) */
+        .quiz-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .quiz-header h3 {
+            margin: 0 0 8px 0;
+            color: var(--accent-blue);
+        }
+
+        .quiz-header p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .quiz-image-wrapper {
+            background: #000;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .quiz-image-wrapper img {
+            width: 100%;
+            max-height: 280px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .quiz-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .quiz-controls input {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: rgba(30, 41, 59, 0.8);
+            color: #fff;
+            width: 65%;
+            font-size: 1rem;
+        }
+
+        .quiz-controls input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .quiz-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        #quiz-feedback {
+            transition: color 0.3s ease;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent-cyan);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0284c7;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
-    <h2>Training Center</h2>
-    <p>Access personnel training manuals and safety guidelines here.</p>
+
+    <!-- AR Mining Safety Memory Game Quiz Container -->
+    <div id="quiz-container" class="quiz-card">
+        <div class="quiz-header">
+            <h3>🧠 AR Safety Component Quick Test</h3>
+            <p id="quiz-instructions">Examine the equipment and type the correct part name below!</p>
+        </div>
+        
+        <!-- Image Display Area -->
+        <div class="quiz-image-wrapper">
+            <img id="quiz-target-image" src="" alt="Mining Safety Component Quiz">
+        </div>
+
+        <!-- Input and Action Area -->
+        <div class="quiz-controls">
+            <input type="text" id="user-answer-input" placeholder="Type component name..." autocomplete="off">
+            <button id="submit-answer-btn" class="btn-primary">Submit</button>
+        </div>
+
+        <!-- Feedback & Status -->
+        <div class="quiz-status">
+            <span id="quiz-feedback"></span>
+        </div>
+
+        <!-- Peek / Hint Button -->
+        <button id="toggle-hint-btn" class="btn-secondary">Peek at Reference Image</button>
+    </div>
+
+    <!-- Script Logic with Continuous Random Question Loop -->
+    <script>
+        // List of components
+        const quizList = [
+            {
+                questionImg: "../Images/Training/Unnamed/aminij.jpeg", 
+                answerImg: "../Images/Training/Named/minij.jpeg",    
+                answer: "Dipper"
+            },
+            {
+                questionImg: "../Images/Training/Unnamed/acrane.jpeg",
+                answerImg: "../Images/Training/Named/crane.jpeg",
+                answer: "Bucket"
+            },
+            {
+                questionImg: "../Images/Training/Unnamed/adozer.jpeg",
+                answerImg: "../Images/Training/Named/dozer.jpeg",
+                answer: "Dozer blade"
+            }
+        ];
+
+        let currentQ = null;
+        let showingHint = false;
+
+        // DOM Elements
+        const targetImage = document.getElementById('quiz-target-image');
+        const answerInput = document.getElementById('user-answer-input');
+        const submitBtn = document.getElementById('submit-answer-btn');
+        const feedbackEl = document.getElementById('quiz-feedback');
+        const hintBtn = document.getElementById('toggle-hint-btn');
+
+        // Function to load a random question
+        function loadNewQuestion() {
+            currentQ = quizList[Math.floor(Math.random() * quizList.length)];
+            targetImage.src = currentQ.questionImg;
+            answerInput.value = "";
+            feedbackEl.textContent = "";
+            showingHint = false;
+            hintBtn.textContent = "Peek at Reference Image";
+            hintBtn.style.display = "block";
+            submitBtn.disabled = false;
+            answerInput.disabled = false;
+        }
+
+        function handleSubmission() {
+            const userVal = answerInput.value.trim().toLowerCase();
+            if (!userVal) return;
+
+            // Compare lowercased user value against lowercased answer string
+            if (userVal === currentQ.answer.trim().toLowerCase()) {
+                feedbackEl.textContent = "✓ Correct! Loading next part...";
+                feedbackEl.style.color = "var(--success-green)";
+                
+                submitBtn.disabled = true;
+                answerInput.disabled = true;
+
+                // Automatically load a new random question after 1.5 seconds
+                setTimeout(() => {
+                    loadNewQuestion();
+                }, 1500);
+            } else {
+                feedbackEl.textContent = "✕ Incorrect. Try again or peek!";
+                feedbackEl.style.color = "var(--error-red)";
+            }
+        }
+
+        // Event Listeners
+        submitBtn.addEventListener('click', handleSubmission);
+
+        answerInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSubmission();
+            }
+        });
+
+        // Hint toggle feature
+        hintBtn.addEventListener('click', () => {
+            if (!showingHint) {
+                targetImage.src = currentQ.answerImg;
+                hintBtn.textContent = "Back to Question";
+                showingHint = true;
+            } else {
+                targetImage.src = currentQ.questionImg;
+                hintBtn.textContent = "Peek at Reference Image";
+                showingHint = false;
+            }
+        });
+
+        // Initialize the first question on page load
+        loadNewQuestion();
+    </script>
 </body>
 </html>
